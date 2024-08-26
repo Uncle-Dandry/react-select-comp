@@ -1,6 +1,10 @@
 import { Select } from '@/shared/ui';
 import { Option } from '@/shared/ui/Select/Select';
 
+import avatarFirstSrc from '@/assets/avatar-1.png';
+import avatarSecondSrc from '@/assets/avatar-2.png';
+import avatarThirdSrc from '@/assets/avatar-3.png';
+
 import UserOption from './UserOption';
 import UserList from './UserList';
 
@@ -22,25 +26,25 @@ const customOptions: Option[] = [
     label: 'Соловьёв Александр',
     value: '1',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-1.png',
+    avatarSrc: avatarFirstSrc,
   },
   {
     label: 'Alex',
     value: '2',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-2.png',
+    avatarSrc: avatarSecondSrc,
   },
   {
     label: 'Alex',
     value: '3',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-3.png',
+    avatarSrc: avatarThirdSrc,
   },
   {
     label: 'Alex',
     value: '4',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-2.png',
+    avatarSrc: avatarSecondSrc,
   },
   {
     label: 'Alex',
@@ -51,7 +55,7 @@ const customOptions: Option[] = [
     label: 'Alex',
     value: '6',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-1.png',
+    avatarSrc: avatarFirstSrc,
   },
   {
     label: 'G',
@@ -62,7 +66,7 @@ const customOptions: Option[] = [
     label: 'Alex',
     value: '8',
     email: 'example@gmail.com',
-    avatarSrc: 'src/assets/avatar-3.png',
+    avatarSrc: avatarThirdSrc,
   },
 ];
 
