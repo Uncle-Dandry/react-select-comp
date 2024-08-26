@@ -19,9 +19,21 @@ const UserOption: FC<CustomOptionProps> = ({
   ...optionProps
 }) => {
   return (
-    <div className={`${styles.userOptionWrapper} ${withPadding ? '' : styles.withoutPadding}`}>
+    <div
+      className={`${
+        styles.userOptionWrapper
+      } ${
+        withPadding ? '' : styles.withoutPadding
+      }`}
+    >
       <div className={styles.userOptionTag}>
-        <span className={`${styles.userOptionAvatarContainer} ${!optionProps?.avatarSrc ? styles.withInitials : ''}`}>
+        <span
+          className={`${
+            styles.userOptionAvatarContainer
+          } ${
+            !optionProps?.avatarSrc ? styles.withInitials : ''
+          }`}
+        >
           {Boolean(optionProps?.avatarSrc) ? (
             <img
               alt={`${label} avatar`}

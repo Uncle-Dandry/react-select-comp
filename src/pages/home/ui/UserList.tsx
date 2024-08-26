@@ -26,11 +26,18 @@ const UserList: FC<UserListProps> = ({
     <div className={styles.userList}>
       {options.map(option => {
         const isSelected = selectedValues.includes(option.value);
+
         return (
           <div
+            className={`${
+              styles.userOptionContainer
+            } ${
+              isSelected ? styles.selected : ''
+            } ${
+              withPadding ? styles.withPadding : ''
+            }`}
             key={option.value}
-            onClick={() => onSelect(option.value)}
-            className={`${styles.userOptionContainer} ${isSelected ? styles.selected : ''} ${withPadding ? styles.withPadding : ''}`}
+            onClick={onSelect.bind(null, option.value)}
           >
             <UserOption
               withPadding={withPadding}

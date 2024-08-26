@@ -42,6 +42,10 @@
   border: none;
   outline: none;
   overflow: hidden;
+
+  &::placeholder {
+    color: var(--text-tertiary, #13081766);
+  }
 }
 
 .select-arrow {
@@ -162,7 +166,6 @@
   color: var(--text-primary, #130817E5);
   background: var(--bg-surface-primary, #FFFFFF);
   border-radius: var(--radiusradius-x);
-  cursor: pointer;
 
   & > div {
     text-overflow: ellipsis;
@@ -170,8 +173,9 @@
   }
 }
 
-.select-option:hover {
+.select-option:not(.no-option):hover {
   background-color: var(--bg-interective-primary, #1308170D);
+  cursor: pointer;
 }
 
 .select-option-avatar {
@@ -217,11 +221,7 @@
   color: var(--text-tertiary, #13081766);
 }
 
-.select-control:hover {
-  border: 1px solid var(--border-accent, #6E328C7A);
-  box-shadow: 0px 0px 0px 3px #71308E1F;
-}
-
+.select-control:not(.disabled):hover,
 .select-control.active,
 .select-control.typing {
   border: 1px solid var(--border-accent, #6E328C7A);
@@ -288,6 +288,10 @@
 
 .select-searchable {
   cursor: text;
+}
+
+.select-input:disabled {
+  cursor: not-allowed;
 }
 
 .select-dropdown::-webkit-scrollbar {

@@ -6,6 +6,8 @@ import UserList from './UserList';
 
 import styles from './SelectSection.module.css';
 
+// only for demonstration. remove before add in lib
+
 const optionsConfig = [
   { label: 'Option 1', value: '1' },
   { label: 'Option 2', value: '2' },
@@ -125,17 +127,17 @@ const SelectSection = () => {
     console.log('Selected value:', value);
   };
 
-  // const handleCreateOption = (newOptionLabel: string) => {
-  //   const newOption = {
-  //     label: newOptionLabel,
-  //     value: String(options.length + 1),
-  //   };
-
-  //   // Здесь можно вызвать API для сохранения нового опшена на сервере
-  //   // например, await api.createOption(newOption);
-
-  //   setOptions((prevOptions) => [...prevOptions, newOption]);
-  // };
+  const handleCreateOption = async (value: string): Promise<boolean> => {
+    try {
+      // Here you can use API
+      // await api.createOption(newOption);
+  
+      return Boolean(value);
+    } catch (error) {
+      console.error('Error during option creation:', error);
+      return false;
+    }
+  };
 
   return (
     <section className={styles.selectSectionRoot}>

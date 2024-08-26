@@ -65,6 +65,14 @@ const SelectDropdown = <T,>({
               }
             </li>
           ))}
+          
+          {!filteredOptions.length && !combobox && (
+            <li className={`select-option no-option`}>
+              <div>
+                No Data
+              </div>
+            </li>
+          )}
 
           {combobox && inputValue
             && !filteredOptions.some(option => option.label.toLowerCase() === inputValue.toLowerCase())

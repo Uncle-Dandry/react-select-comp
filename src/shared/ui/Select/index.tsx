@@ -27,7 +27,7 @@ export interface SelectProps<T> {
   placeholder?: string;
   hint?: string;
   onChange?: (value: T | T[]) => void;
-  onStartCreateOption?: (value: string) => Promise<void>;
+  onStartCreateOption?: (value: string) => Promise<boolean>;
   onCreateOption?: (newOption: Option<T>) => void;
   dropdownRender?: (props: {
     options: Option<T>[];
@@ -56,7 +56,7 @@ const Select = <T,>({
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [selectedValue, setSelectedValue] = useState<T | T[]>(
-    multiple ? ([] as T[]) : (value || ('' as unknown as T))
+    multiple ? ([] as T[]) : (value || ('' as unknown as T)),
   );
   const [options, setOptions] = useState<Option<T>[]>(initialOptions);
   const [filteredOptions, setFilteredOptions] = useState<Option<T>[]>(initialOptions);
@@ -138,9 +138,18 @@ const Select = <T,>({
     (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+
+        if ((hasError || !inputValue) && !multiple) {
+          setSelectedValue('' as unknown as T);
+          onChange?.('' as unknown as T);
+        }
       }
     },
-    [],
+    [
+      hasError,
+      multiple,
+      onChange,
+    ],
   );
 
   const handleInputChange = useCallback(
@@ -148,18 +157,15 @@ const Select = <T,>({
       const value = event.target.value;
       setInputValue(value);
 
-      const newFilteredOptions = options.filter(option =>
+      const newFilteredOptions = options.filter(option => (
         option.label.toLowerCase().includes(value.toLowerCase())
-      );
+      ));
 
       setFilteredOptions(newFilteredOptions);
 
-      const exactMatch = options.some(option =>
-        option.label.toLowerCase() === value.toLowerCase()
+      setHasError(error
+        || (!combobox && newFilteredOptions.length === 0)
       );
-
-      setHasError(!combobox && newFilteredOptions.length === 0
-        || (combobox && !exactMatch));
     },
     [options, combobox],
   );
@@ -167,13 +173,13 @@ const Select = <T,>({
   const handleCreateOption = useCallback(
     async () => {
       if (!inputValue) return;
+      
+      // TODO: correct after getting a better understanding of how it should work and loading
+      const successCreated = !onStartCreateOption || await onStartCreateOption(inputValue);
 
-      if (onStartCreateOption) {
-        try {
-          await onStartCreateOption(inputValue);
-        } catch (error) {
-          return;
-        }
+      if (!successCreated) {
+        setHasError(true);
+        return;
       }
 
       const newOption: Option<T> = {
@@ -229,7 +235,7 @@ const Select = <T,>({
         <SelectChip
           key={String(val)}
           option={options.find(opt => opt.value === val)}
-          onRemove={() => handleSelect(val)}
+          onRemove={handleSelect.bind(null, val)}
         />
       ))
     ),
@@ -247,21 +253,25 @@ const Select = <T,>({
     [multiple, selectedValue],
   );
 
+  const containerClassName = useMemo(
+    () => {
+      return [
+        'select-container',
+        disabled && 'select-disabled',
+        hasError && 'select-error',
+        !searchable && 'select-non-searchable'
+      ].filter(Boolean).join(' ');
+    },
+    [
+      disabled,
+      hasError,
+      searchable,
+    ],
+  );
+
   return (
     <div
-      className={`
-        select-container ${
-          disabled ? 'select-disabled' : ''
-        } ${
-          hasError
-            ? 'select-error'
-            : ''
-        } ${
-          !searchable
-            ? 'select-non-searchable'
-            : ''
-        }`
-      }
+      className={containerClassName}
       ref={selectRef}
       onClick={handleSelectContainerClick}
     >
@@ -287,7 +297,7 @@ const Select = <T,>({
       {isOpen && (
         dropdownRender
           ? dropdownRender({
-            options,
+            options: filteredOptions,
             selectedValues,
             onSelect: handleSelect,
           }) : (
@@ -303,7 +313,7 @@ const Select = <T,>({
           )
       )}
 
-      {hint && (
+      {hint && hasError && (
         <div className="select-hint">
           {hint}
         </div>
