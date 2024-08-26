@@ -1,0 +1,41 @@
+.userList {
+  max-height: 300px;
+  border: 1px solid var(--border-secondary, #1308170D);
+  box-shadow: 0px 16px 64px -4px #16081E14;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    width: 6px;
+    left: 0;
+    background: #ffffff;
+    border-radius: 12px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: #9193997a;
+    border-radius: 10px;
+    opacity: 0,48;
+  }
+}
+
+.userOptionContainer {
+  padding: 8px 0;
+  cursor: pointer;
+
+  &.withPadding {
+    padding-right: 34px;
+    padding-left: 32px;
+
+    &:hover {
+      background-color: var(--bg-interective-primary, #1308170D);
+    }
+  }
+}
+
+.userOptionContainer.selected {
+  background-color: #f0f0f0;
+}

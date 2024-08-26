@@ -1,7 +1,7 @@
-import type {
-  ChangeEvent,
-  FC,
-  RefObject,
+import {
+  type ChangeEvent,
+  type FC,
+  type RefObject,
 } from 'react';
 
 import arrowDownIconSrc from '@/assets/icons/arrow-down.svg';
@@ -22,6 +22,7 @@ interface SelectControlProps {
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onFocus: () => void;
   onToggleDropdown: () => void;
+  onClick: () => void;
   renderChips: () => JSX.Element[];
 }
 
@@ -40,34 +41,28 @@ const SelectControl: FC<SelectControlProps> = ({
   onInputChange,
   onFocus,
   onToggleDropdown,
+  onClick,
   renderChips,
 }) => {
   const stateClasses = [
     error ? 'error' : '',
     active ? 'active' : '',
     filled ? 'filled' : '',
-    disabled ? 'disabled' : ''
-  ].join(' ');
+    disabled ? 'disabled' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div
       className={`
-        select-control${
-          isOpen && !searchable
-            ? ' open'
-            : ''
-        } ${
-          stateClasses
-        } ${
-          searchable
-            ? 'select-searchable'
-            : 'select-non-searchable'
-        }${withChips && ' with-chips'}`}
+        select-control ${isOpen && !searchable ? 'open' : ''} 
+        ${stateClasses} 
+        ${searchable ? 'select-searchable' : 'select-non-searchable'} 
+        ${withChips ? 'with-chips' : ''}
+      `}
+      onClick={onClick}
     >
       <div className={multiple ? 'select-multi-container' : 'select-input-wrapper'}>
-        {multiple && (
-          renderChips()
-        )}
+        {multiple && renderChips()}
 
         <input
           className={`select-input ${stateClasses}`}
@@ -79,7 +74,7 @@ const SelectControl: FC<SelectControlProps> = ({
           value={inputValue}
           onChange={onInputChange}
           {...(searchable && {
-            onFocus: onFocus,
+            onFocus,
           })}
         />
       </div>

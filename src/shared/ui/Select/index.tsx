@@ -1,8 +1,17 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+
 import SelectControl from './SelectControl';
 import SelectDropdown from './SelectDropdown';
 import SelectChip from './SelectChip';
+
 import { Option } from './Select.ts';
+
 import './Select.css';
 
 export interface SelectProps {
@@ -18,7 +27,11 @@ export interface SelectProps {
   onChange?: (value: string | number | (string | number)[]) => void;
   onStartCreateOption?: (value: string) => Promise<void>;
   onCreateOption?: (newOption: Option) => void;
-  dropdownRender?: (menu: React.ReactNode) => React.ReactNode;
+  dropdownRender?: (props: {
+    options: Option[];
+    selectedValues: (string | number)[];
+    onSelect: (value: string | number) => void;
+  }) => React.ReactNode;
   optionRender?: (option: Option) => React.ReactNode;
 }
 
@@ -48,125 +61,166 @@ const Select: React.FC<SelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const isActive = isOpen;
+  const isFilled = useMemo(
+    () => multiple
+      ? (selectedValue as (string | number)[]).length > 0
+      : Boolean(selectedValue),
+    [multiple, selectedValue],
+  );
 
-  const isFilled = multiple
-    ? (selectedValue as (string | number)[]).length > 0
-    : Boolean(selectedValue);
-
-  const handleToggleDropdown = () => {
-    if (!disabled) {
-      setIsOpen(prev => !prev);
-    }
-  };
-
-  const handleSelectContainerClick = () => {
-    if (searchable && !disabled) {
-      inputRef.current?.focus();
-    } else if (!disabled && !isOpen) {
-      handleToggleDropdown();
-    }
-  };
-
-  const handleSelect = (selected: string | number) => {
-    if (multiple) {
-      const newValue = (selectedValue as (string | number)[]).includes(selected)
-        ? (selectedValue as (string | number)[]).filter(val => val !== selected)
-        : [...(selectedValue as (string | number)[]), selected];
-
-      setSelectedValue(newValue);
-      if (onChange) onChange(newValue);
-      setInputValue('');
-    } else {
-      setSelectedValue(selected);
-      if (onChange) onChange(selected);
-      setIsOpen(false);
-      setInputValue(options.find(opt => opt.value === selected)?.label || '');
-    }
-
-    setFilteredOptions(options);
-    setHasError(false);
-  };
-
-  const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-      setIsOpen(false);
-    }
-  }, []);
-
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-
-    const newFilteredOptions = options.filter(option =>
-      option.label.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setFilteredOptions(newFilteredOptions);
-
-    const exactMatch = options.some(option => option.label.toLowerCase() === value.toLowerCase());
-
-    if (combobox && value && !exactMatch) {
-      setHasError(false);
-    } else if (!combobox && newFilteredOptions.length === 0) {
-      setHasError(true);
-    } else {
-      setHasError(false);
-    }
-  }, [options, combobox]);
-
-  const handleCreateOption = useCallback(async () => {
-    if (onStartCreateOption) {
-      try {
-        await onStartCreateOption(inputValue);
-      } catch (error) {
-        return;
+  const handleToggleDropdown = useCallback(
+    () => {
+      if (!disabled) {
+        setIsOpen(prev => !prev);
       }
-    }
+    },
+    [disabled],
+  );
 
-    const newOption: Option = {
-      label: inputValue,
-      value: inputValue,
-    };
+  const handleSelectContainerClick = useCallback(
+    () => {
+      if (searchable && !disabled) {
+        inputRef.current?.focus();
+      }
+    },
+    [
+      searchable,
+      disabled,
+    ],
+  );
 
-    setOptions(prevOptions => {
-      const newOptionsList = [...prevOptions, newOption];
-      setFilteredOptions(newOptionsList);
-      return newOptionsList;
-    });
+  const handleSelectControlClick = useCallback(
+    () => {
+      if (!searchable) {
+        handleToggleDropdown();
+      }
+    },
+    [
+      searchable,
+      disabled,
+      handleToggleDropdown,
+    ],
+  );
 
-    if (onCreateOption) {
-      onCreateOption(newOption);
-    }
+  const handleSelect = useCallback(
+    (selected: string | number) => {
+      if (multiple) {
+        const newValue = (selectedValue as (string | number)[]).includes(selected)
+          ? (selectedValue as (string | number)[]).filter(val => val !== selected)
+          : [...(selectedValue as (string | number)[]), selected];
 
-    handleSelect(newOption.value);
+        setSelectedValue(newValue);
+        onChange?.(newValue);
+        setInputValue('');
+      } else {
+        setSelectedValue(selected);
+        onChange?.(selected);
+        setIsOpen(false);
+        setInputValue(options.find(opt => opt.value === selected)?.label || '');
+      }
 
-    if (!multiple) {
-      setInputValue(inputValue);
-    }
-  }, [inputValue, onStartCreateOption, onCreateOption, handleSelect]);
+      setFilteredOptions(options);
+      setHasError(false);
+    },
+    [
+      multiple,
+      selectedValue,
+      options,
+      onChange,
+    ],
+  );
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [handleClickOutside]);
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    },
+    [],
+  );
 
-  useEffect(() => {
-    if (value !== undefined) {
-      setSelectedValue(value);
-      setInputValue(options.find(opt => opt.value === value)?.label || '');
-    }
-  }, [value, options]);
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setInputValue(value);
 
-  const handleFocus = () => {
-    setIsOpen(true);
-  };
+      const newFilteredOptions = options.filter(option =>
+        option.label.toLowerCase().includes(value.toLowerCase())
+      );
 
-  const renderChips = () => {
-    return (
-      // <div className="chips-container">
+      setFilteredOptions(newFilteredOptions);
+
+      const exactMatch = options.some(option =>
+        option.label.toLowerCase() === value.toLowerCase()
+      );
+
+      setHasError(!combobox && newFilteredOptions.length === 0
+        || (combobox && !exactMatch));
+    },
+    [options, combobox],
+  );
+
+  const handleCreateOption = useCallback(
+    async () => {
+      if (!inputValue) return;
+
+      if (onStartCreateOption) {
+        try {
+          await onStartCreateOption(inputValue);
+        } catch (error) {
+          return;
+        }
+      }
+
+      const newOption: Option = {
+        label: inputValue,
+        value: inputValue,
+      };
+
+      setOptions(prevOptions => {
+        const newOptionsList = [...prevOptions, newOption];
+        setFilteredOptions(newOptionsList);
+        return newOptionsList;
+      });
+
+      onCreateOption?.(newOption);
+      handleSelect(newOption.value);
+
+      if (!multiple) {
+        setInputValue(inputValue);
+      }
+    },
+    [
+      multiple,
+      inputValue,
+      onStartCreateOption,
+      onCreateOption,
+      handleSelect,
+    ],
+  );
+
+  useEffect(
+    () => {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    },
+    [handleClickOutside],
+  );
+
+  useEffect(
+    () => {
+      if (value !== undefined) {
+        setSelectedValue(value);
+        setInputValue(options.find(opt => opt.value === value)?.label || '');
+      }
+    },
+    [value, options],
+  );
+
+  const renderChips = useCallback(
+    () => (
       (selectedValue as (string | number)[]).map(val => (
         <SelectChip
           key={val}
@@ -174,29 +228,48 @@ const Select: React.FC<SelectProps> = ({
           onRemove={() => handleSelect(val)}
         />
       ))
-      // </div>
-    );
-  };
+    ),
+    [
+      selectedValue,
+      options,
+      handleSelect,
+    ],
+  );
 
-  const dropdownContent = (
-    <SelectDropdown
-      combobox={combobox}
-      inputValue={inputValue}
-      filteredOptions={filteredOptions}
-      selectedValues={
-        multiple
-          ? (selectedValue as (string | number)[])
-          : [selectedValue as (string | number)]
-      }
-      onCreateOption={handleCreateOption}
-      onSelect={handleSelect}
-      optionRender={optionRender}
-    />
+  const selectedValues = useMemo(
+    () => multiple
+      ? (selectedValue as (string | number)[])
+      : [selectedValue as (string | number)],
+    [multiple, selectedValue],
+  );
+
+  const dropdownContent = useMemo(
+    () => (
+      <SelectDropdown
+        combobox={combobox}
+        inputValue={inputValue}
+        filteredOptions={filteredOptions}
+        selectedValues={selectedValues}
+        onCreateOption={handleCreateOption}
+        onSelect={handleSelect}
+        optionRender={optionRender}
+      />
+    ),
+    [
+      combobox,
+      inputValue,
+      filteredOptions,
+      selectedValues,
+      handleCreateOption,
+      handleSelect,
+      optionRender
+    ],
   );
 
   return (
     <div
-      className={`select-container ${
+      className={`
+        select-container ${
           disabled ? 'select-disabled' : ''
         } ${
           hasError
@@ -217,7 +290,7 @@ const Select: React.FC<SelectProps> = ({
         multiple={multiple}
         error={error}
         filled={isFilled}
-        active={isActive}
+        active={isOpen}
         searchable={searchable}
         withChips={multiple && (selectedValue as (string | number)[]).length > 0}
         placeholder={placeholder}
@@ -225,14 +298,18 @@ const Select: React.FC<SelectProps> = ({
         inputRef={inputRef}
         renderChips={renderChips}
         onInputChange={handleInputChange}
-        onFocus={handleFocus}
+        onFocus={setIsOpen.bind(null, true)}
         onToggleDropdown={handleToggleDropdown}
+        onClick={handleSelectControlClick}
       />
 
       {isOpen && (
         dropdownRender
-          ? dropdownRender(dropdownContent)
-          : dropdownContent
+          ? dropdownRender({
+            options,
+            selectedValues,
+            onSelect: handleSelect,
+          }) : dropdownContent
       )}
 
       {hint && (

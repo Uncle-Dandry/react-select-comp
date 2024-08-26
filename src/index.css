@@ -3,29 +3,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Montserrat, sans-serif;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
   font-weight: 400;
-
   background-color: #ffffff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
   font-weight: 500;
   text-decoration: inherit;
-}
-
-a:hover {
-
 }
 
 body {
@@ -48,15 +37,6 @@ button {
   transition: opacity 0.3s;
 }
 
-button:hover {
-
-}
-
-button:focus,
-button:focus-visible {
-  
-}
-
 li {
   list-style: none;
 }
@@ -67,7 +47,7 @@ li {
 
   --paddingspacing-x: 4px;
   /* // n/a */
-  --paddingspacing-x2: 7px;
+  --paddingspacing-x2: 8px;
   /* // n/a */
   --paddingspacing-x3: 16px;
   --paddingspacing-x4: 11px;
@@ -89,7 +69,7 @@ li {
   --border-accent: #6E328C7A;
 
   /* // n/a */
-  --radiusradius-x: 12px;
+  --radiusradius-x: 4px;
   /* // n/a */
   --radiusradius-x2: 8px;
 }

@@ -1,6 +1,7 @@
 .select-container {
   position: relative;
-  width: 292px;
+  max-width: 340px;
+  width: 100%;
 }
 
 .select-control {
@@ -10,8 +11,8 @@
   border: 1px solid var(--border-primary, #1308171A);
   border-radius: 8px;
   background: var(--bg-surface-primary, #FFFFFF);
-  min-height: 44px;
-  height: 44px;
+  min-height: 48px;
+  height: 48px;
   cursor: pointer;
   overflow: hidden;
   gap: var(--marginspacing-x2);
@@ -32,7 +33,7 @@
   font-family: Inter, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  line-height: 22px;
+  line-height: 24px;
   background: var(--bg-surface-primary, #FFFFFF);
   color: var(--text-tertiary, #13081766);
   flex: 1;
@@ -47,6 +48,8 @@
   width: 20px;
   height: 20px;
   margin-left: 8px;
+  display: grid;
+  align-items: center;
   pointer-events: none;
   transition: all 0.3s ease;
 }
@@ -83,9 +86,9 @@
   background: var(--bg-surface-secondary-accent, #6E328C0F);
   border: 1px solid var(--border-primary, #1308171A);
   border-radius: 8px;
-  padding: 4px;
+  padding: 3px 4px;
+  font-family: Inter;
   font-size: 12px;
-  line-height: 1;
   cursor: default;
 }
 
@@ -111,6 +114,9 @@
   width: 16px;
   height: 16px;
   margin-left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   cursor: pointer;
 }
 
@@ -150,9 +156,8 @@
   padding: var(--paddingspacing-x4) var(--paddingspacing-x3);
   cursor: pointer;
   width: 100%;
-  /* height: 36px; */
   margin: 4px 0;
-  padding: var(--paddingspacing-x2) var(--paddingspacing-x3);
+  padding: var(--paddingspacing-x2) 12px;
   font-family: Inter, sans-serif;
   font-size: 15px;
   font-weight: 500;
@@ -162,6 +167,11 @@
   color: var(--text-primary, #130817E5);
   background: var(--bg-surface-primary, #FFFFFF);
   border-radius: var(--radiusradius-x);
+
+  & > div {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+  }
 }
 
 .select-option:hover {
@@ -185,13 +195,30 @@
 }
 
 .create-option {
-  color: var(--bg-primary, #007bff);
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  font-family: Inter;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: -0.012em;
+  text-align: left;
+  color: var(--text-primary, #130817E5);
+
+  & > img {
+    margin-right: 8px;
+  }
 }
 
 .select-hint {
-  color: #f00;
   margin-top: 8px;
+  font-family: Inter;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.006em;
+  text-align: left;
+  color: var(--text-tertiary, #13081766);
 }
 
 .select-control:hover {
@@ -210,15 +237,15 @@
   font-family: Inter, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  line-height: 22px;
+  line-height: 24px;
   letter-spacing: -0.012em;
   text-align: left;
   color: var(--text-primary, #130817E5);
   caret-color: var(--icons-primary, #130817E5);
 }
 
-.select-control.filled {
-  border: 1px solid var(--border-primary, #1308171A);
+.select-control.filled .select-input {
+  color: var(--text-primary, #130817E5);
 }
 
 .select-error .select-control {
@@ -266,3 +293,27 @@
 .select-searchable {
   cursor: text;
 }
+
+.select-dropdown::-webkit-scrollbar {
+  width: 10px;
+}
+
+.select-dropdown::-webkit-scrollbar-track {
+  width: 6px;
+  left: 0;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.select-dropdown::-webkit-scrollbar-thumb {
+  background-color: #9193997a;
+  border-radius: 10px;
+  opacity: 0,48;
+}
+
+/* Firefox, Edge */
+/* .select-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #919399 #ffffff;
+  scroll-behavior: smooth;
+} */

@@ -1,10 +1,10 @@
 import { Select } from '@/shared/ui';
-// import Select from './Select';
+import { Option } from '@/shared/ui/Select/Select';
+
+import UserOption from './UserOption';
+import UserList from './UserList';
 
 import styles from './SelectSection.module.css';
-import { useState } from 'react';
-import { Option } from '@/shared/ui/Select/Select';
-import UserOption from './UserOption';
 
 const optionsConfig = [
   { label: 'Option 1', value: '1' },
@@ -17,7 +17,7 @@ const optionsConfig = [
 
 const customOptions: Option[] = [
   {
-    label: 'Alex',
+    label: 'Соловьёв Александр',
     value: '1',
     email: 'example@gmail.com',
     avatarSrc: 'src/assets/avatar-1.png',
@@ -34,21 +34,49 @@ const customOptions: Option[] = [
     email: 'example@gmail.com',
     avatarSrc: 'src/assets/avatar-3.png',
   },
+  {
+    label: 'Alex',
+    value: '4',
+    email: 'example@gmail.com',
+    avatarSrc: 'src/assets/avatar-2.png',
+  },
+  {
+    label: 'Alex',
+    value: '5',
+    email: 'example@gmail.com',
+  },
+  {
+    label: 'Alex',
+    value: '6',
+    email: 'example@gmail.com',
+    avatarSrc: 'src/assets/avatar-1.png',
+  },
+  {
+    label: 'G',
+    value: '7',
+    email: 'example@gmail.com',
+  },
+  {
+    label: 'Alex',
+    value: '8',
+    email: 'example@gmail.com',
+    avatarSrc: 'src/assets/avatar-3.png',
+  },
 ];
 
 const selectsConfig = [
   {
     title: 'Select',
     props: {
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: optionsConfig,
     },
   },
   {
-    title: 'Select',
+    title: 'Searchable Select',
     props: {
       searchable: true,
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: optionsConfig,
     },
   },
@@ -57,7 +85,7 @@ const selectsConfig = [
     props: {
       searchable: true,
       multiple: true,
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: optionsConfig,
     },
   },
@@ -66,7 +94,7 @@ const selectsConfig = [
     props: {
       searchable: true,
       combobox: true,
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: optionsConfig,
     },
   },
@@ -76,7 +104,7 @@ const selectsConfig = [
       searchable: true,
       combobox: true,
       multiple: true,
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: optionsConfig,
     },
   },
@@ -85,7 +113,7 @@ const selectsConfig = [
     props: {
       searchable: true,
       multiple: true,
-      placeholder: 'Choose an option',
+      placeholder: 'Placeholder',
       options: customOptions,
       optionRender: UserOption,
     },
@@ -113,10 +141,10 @@ const SelectSection = () => {
 
   return (
     <section className={styles.selectSectionRoot}>
-      {selectsConfig.map(({ title, props }) => (
+      {selectsConfig.map(({ title, props }, index) => (
         <div
           className={styles.selectSectionWrapper}
-          key={title}
+          key={`${title}-${index}`}
         >
           <h2>
             {title}
@@ -126,18 +154,47 @@ const SelectSection = () => {
         </div>
       ))}
 
-      {/* <div className={styles.selectSectionWrapper}>
+      <div className={styles.selectSectionWrapper}>
         <h2>
-          
+          User List without Padding
         </h2>
 
         <Select
+          searchable
           multiple
-          placeholder="Choose an option"
+          placeholder="Placeholder"
           options={customOptions}
-          optionRender={UserOption}
+          dropdownRender={({ options, selectedValues, onSelect }) => (
+            <UserList
+              options={options}
+              selectedValues={selectedValues}
+              onSelect={onSelect}
+            />
+          )}
         />
-      </div> */}
+      </div>
+
+      <div className={styles.selectSectionWrapper}>
+        <h2>
+          User List with Padding
+        </h2>
+
+        <Select
+          searchable
+          multiple
+          placeholder="Placeholder"
+          hint="All users"
+          options={customOptions}
+          dropdownRender={({ options, selectedValues, onSelect }) => (
+            <UserList
+              withPadding
+              options={options}
+              selectedValues={selectedValues}
+              onSelect={onSelect}
+            />
+          )}
+        />
+      </div>
     </section>
   );
 };

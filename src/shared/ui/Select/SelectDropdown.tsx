@@ -1,19 +1,29 @@
-import React from 'react';
+import {
+  type FC,
+  type ReactNode,
+  memo,
+} from 'react';
+
 import { Option } from './Select.ts';
 
 import plusIconSrc from '@/assets/icons/plus.svg';
 
-interface SelectDropdownProps {
+export interface SelectDropdownProps {
   combobox: boolean;
   inputValue: string;
   filteredOptions: Option[];
   selectedValues: (string | number)[];
   onCreateOption: () => void;
   onSelect: (value: string | number) => void;
-  optionRender?: (option: Option, isSelected: boolean) => React.ReactNode;
+  optionRender?: (option: Option) => ReactNode;
+  dropdownRender?: (props: {
+    options: Option[];
+    selectedValues: (string | number)[];
+    onSelect: (value: string | number) => void;
+  }) => ReactNode;
 }
 
-const SelectDropdown: React.FC<SelectDropdownProps> = ({
+const SelectDropdown: FC<SelectDropdownProps> = ({
   combobox,
   inputValue,
   filteredOptions,
@@ -21,34 +31,45 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({
   onCreateOption,
   onSelect,
   optionRender,
+  dropdownRender,
 }) => (
-  <ul className="select-dropdown">
-    {filteredOptions.map(option => {
-      const isSelected = selectedValues.includes(option.value);
-      return (
-        <li
-          className={`select-option ${option.disabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}
-          key={option.value}
-          onClick={() => !option.disabled && onSelect(option.value)}
-        >
-          {optionRender ? optionRender(option, isSelected) : <div>{option.label}</div>}
-        </li>
-      );
-    })}
+  <div className="select-dropdown">
+    {dropdownRender ? (
+      dropdownRender({
+        options: filteredOptions,
+        selectedValues,
+        onSelect,
+      })
+    ) : (
+      <ul>
+        {filteredOptions.map(option => {
+          const isSelected = selectedValues.includes(option.value);
+          return (
+            <li
+              className={`select-option ${option.disabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}
+              key={option.value}
+              onClick={() => !option.disabled && onSelect(option.value)}
+            >
+              {optionRender ? optionRender({ ...option, selected: isSelected }) : <div>{option.label}</div>}
+            </li>
+          );
+        })}
 
-    {combobox && inputValue && !filteredOptions.some(option => option.label.toLowerCase() === inputValue.toLowerCase()) && (
-      <li className="select-option create-option" onClick={onCreateOption}>
-        <img
-          alt={`Add ${inputValue}`}
-          src={plusIconSrc}
-        />
+        {combobox && inputValue && !filteredOptions.some(option => option.label.toLowerCase() === inputValue.toLowerCase()) && (
+          <li className="select-option create-option" onClick={onCreateOption}>
+            <img
+              alt={`Add ${inputValue}`}
+              src={plusIconSrc}
+            />
 
-        <span>
-          Создать «{inputValue}»
-        </span>
-      </li>
+            <span>
+              Создать «{inputValue}»
+            </span>
+          </li>
+        )}
+      </ul>
     )}
-  </ul>
+  </div>
 );
 
-export default SelectDropdown;
+export default memo(SelectDropdown);
