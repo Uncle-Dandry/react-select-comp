@@ -121,9 +121,7 @@ const selectsConfig = [
 ];
 
 const SelectSection = () => {
-  // const [options, setOptions] = useState([...optionsConfig]);
-
-  const handleChange = (value: string | number) => {
+  const handleChange = (value: string | number | (string | number)[]) => {
     console.log('Selected value:', value);
   };
 
@@ -164,6 +162,7 @@ const SelectSection = () => {
           multiple
           placeholder="Placeholder"
           options={customOptions}
+          onChange={handleChange}
           dropdownRender={({ options, selectedValues, onSelect }) => (
             <UserList
               options={options}
@@ -183,14 +182,12 @@ const SelectSection = () => {
           searchable
           multiple
           placeholder="Placeholder"
-          hint="All users"
+          hint="Hint"
           options={customOptions}
-          dropdownRender={({ options, selectedValues, onSelect }) => (
+          dropdownRender={(dropdownProps) => (
             <UserList
               withPadding
-              options={options}
-              selectedValues={selectedValues}
-              onSelect={onSelect}
+              {...dropdownProps}
             />
           )}
         />

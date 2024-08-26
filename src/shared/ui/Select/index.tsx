@@ -1,4 +1,6 @@
-import React, {
+import {
+  type ChangeEvent,
+  type ReactNode,
   useState,
   useRef,
   useEffect,
@@ -14,28 +16,28 @@ import { Option } from './Select.ts';
 
 import './Select.css';
 
-export interface SelectProps {
+export interface SelectProps<T> {
   searchable?: boolean;
   multiple?: boolean;
   disabled?: boolean;
   error?: boolean;
   combobox?: boolean;
-  value?: string | number | (string | number)[];
-  options: Option[];
+  value?: T | T[];
+  options: Option<T>[];
   placeholder?: string;
   hint?: string;
-  onChange?: (value: string | number | (string | number)[]) => void;
+  onChange?: (value: T | T[]) => void;
   onStartCreateOption?: (value: string) => Promise<void>;
-  onCreateOption?: (newOption: Option) => void;
+  onCreateOption?: (newOption: Option<T>) => void;
   dropdownRender?: (props: {
-    options: Option[];
-    selectedValues: (string | number)[];
-    onSelect: (value: string | number) => void;
-  }) => React.ReactNode;
-  optionRender?: (option: Option) => React.ReactNode;
+    options: Option<T>[];
+    selectedValues: T[];
+    onSelect: (value: T) => void;
+  }) => ReactNode;
+  optionRender?: (option: Option<T>) => ReactNode;
 }
 
-const Select: React.FC<SelectProps> = ({
+const Select = <T,>({
   searchable = false,
   multiple = false,
   combobox = false,
@@ -50,12 +52,14 @@ const Select: React.FC<SelectProps> = ({
   onCreateOption,
   dropdownRender,
   optionRender,
-}) => {
+}: SelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [selectedValue, setSelectedValue] = useState<string | number | (string | number)[]>(value || (multiple ? [] : ''));
-  const [options, setOptions] = useState<Option[]>(initialOptions);
-  const [filteredOptions, setFilteredOptions] = useState<Option[]>(initialOptions);
+  const [selectedValue, setSelectedValue] = useState<T | T[]>(
+    multiple ? ([] as T[]) : (value || ('' as unknown as T))
+  );
+  const [options, setOptions] = useState<Option<T>[]>(initialOptions);
+  const [filteredOptions, setFilteredOptions] = useState<Option<T>[]>(initialOptions);
   const [hasError, setHasError] = useState(error);
 
   const selectRef = useRef<HTMLDivElement>(null);
@@ -63,7 +67,7 @@ const Select: React.FC<SelectProps> = ({
 
   const isFilled = useMemo(
     () => multiple
-      ? (selectedValue as (string | number)[]).length > 0
+      ? (selectedValue as T[]).length > 0
       : Boolean(selectedValue),
     [multiple, selectedValue],
   );
@@ -79,7 +83,7 @@ const Select: React.FC<SelectProps> = ({
 
   const handleSelectContainerClick = useCallback(
     () => {
-      if (searchable && !disabled) {
+      if (searchable && !disabled && multiple) {
         inputRef.current?.focus();
       }
     },
@@ -103,11 +107,11 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const handleSelect = useCallback(
-    (selected: string | number) => {
+    (selected: T) => {
       if (multiple) {
-        const newValue = (selectedValue as (string | number)[]).includes(selected)
-          ? (selectedValue as (string | number)[]).filter(val => val !== selected)
-          : [...(selectedValue as (string | number)[]), selected];
+        const newValue = (selectedValue as T[]).includes(selected)
+          ? (selectedValue as T[]).filter(val => val !== selected)
+          : [...(selectedValue as T[]), selected];
 
         setSelectedValue(newValue);
         onChange?.(newValue);
@@ -140,7 +144,7 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
       setInputValue(value);
 
@@ -172,9 +176,9 @@ const Select: React.FC<SelectProps> = ({
         }
       }
 
-      const newOption: Option = {
+      const newOption: Option<T> = {
         label: inputValue,
-        value: inputValue,
+        value: inputValue as unknown as T,
       };
 
       setOptions(prevOptions => {
@@ -221,9 +225,9 @@ const Select: React.FC<SelectProps> = ({
 
   const renderChips = useCallback(
     () => (
-      (selectedValue as (string | number)[]).map(val => (
+      (selectedValue as T[]).map(val => (
         <SelectChip
-          key={val}
+          key={String(val)}
           option={options.find(opt => opt.value === val)}
           onRemove={() => handleSelect(val)}
         />
@@ -238,32 +242,9 @@ const Select: React.FC<SelectProps> = ({
 
   const selectedValues = useMemo(
     () => multiple
-      ? (selectedValue as (string | number)[])
-      : [selectedValue as (string | number)],
+      ? (selectedValue as T[])
+      : [selectedValue as T],
     [multiple, selectedValue],
-  );
-
-  const dropdownContent = useMemo(
-    () => (
-      <SelectDropdown
-        combobox={combobox}
-        inputValue={inputValue}
-        filteredOptions={filteredOptions}
-        selectedValues={selectedValues}
-        onCreateOption={handleCreateOption}
-        onSelect={handleSelect}
-        optionRender={optionRender}
-      />
-    ),
-    [
-      combobox,
-      inputValue,
-      filteredOptions,
-      selectedValues,
-      handleCreateOption,
-      handleSelect,
-      optionRender
-    ],
   );
 
   return (
@@ -292,7 +273,7 @@ const Select: React.FC<SelectProps> = ({
         filled={isFilled}
         active={isOpen}
         searchable={searchable}
-        withChips={multiple && (selectedValue as (string | number)[]).length > 0}
+        withChips={multiple && (selectedValue as T[]).length > 0}
         placeholder={placeholder}
         inputValue={inputValue}
         inputRef={inputRef}
@@ -309,7 +290,17 @@ const Select: React.FC<SelectProps> = ({
             options,
             selectedValues,
             onSelect: handleSelect,
-          }) : dropdownContent
+          }) : (
+            <SelectDropdown
+              combobox={combobox}
+              inputValue={inputValue}
+              filteredOptions={filteredOptions}
+              selectedValues={selectedValues}
+              onCreateOption={handleCreateOption}
+              onSelect={handleSelect}
+              optionRender={optionRender}
+            />
+          )
       )}
 
       {hint && (

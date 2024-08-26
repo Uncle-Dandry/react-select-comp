@@ -1,15 +1,16 @@
-import { type FC } from 'react';
-
 import { Option } from './Select';
 
 import removeSrc from '@/assets/icons/cross.svg';
 
-interface SelectChipProps {
-  option?: Option;
+interface SelectChipProps<T> {
+  option?: Option<T>;
   onRemove: () => void;
 }
 
-const SelectChip: FC<SelectChipProps> = ({ option, onRemove }) => {
+const SelectChip = <T,>({
+  option,
+  onRemove,
+}: SelectChipProps<T>) => {
   return (
     <div className="select-chip">
       {Boolean(option?.avatarSrc) && typeof option?.avatarSrc === 'string' && (

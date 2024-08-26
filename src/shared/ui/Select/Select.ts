@@ -1,6 +1,6 @@
-export interface Option<T = {}> {
+export interface Option<T = any> {
   label: string;
-  value: string | number;
+  value: T;
   disabled?: boolean;
   [key: string]: string | number | boolean | undefined | T;
 }
