@@ -42,13 +42,13 @@ li {
 }
 
 :root {
-  /* // n/a */
+
   --marginspacing-x2: 10px;
 
   --paddingspacing-x: 4px;
-  /* // n/a */
+
   --paddingspacing-x2: 8px;
-  /* // n/a */
+
   --paddingspacing-x3: 16px;
   --paddingspacing-x4: 11px;
 
@@ -68,8 +68,8 @@ li {
   --border-secondary: #1308170D;
   --border-accent: #6E328C7A;
 
-  /* // n/a */
+
   --radiusradius-x: 4px;
-  /* // n/a */
+
   --radiusradius-x2: 8px;
 }

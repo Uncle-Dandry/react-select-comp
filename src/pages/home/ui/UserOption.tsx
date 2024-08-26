@@ -4,7 +4,7 @@ import chekIconSrc from '@/assets/icons/checkbox-option.svg';
 
 import styles from './UserOption.module.css';
 
-interface CustomOptionProps {
+interface UserOptionProps {
   selected?: boolean;
   withPadding?: boolean;
   label: string;
@@ -12,7 +12,7 @@ interface CustomOptionProps {
   avatarSrc?: string;
 }
 
-const UserOption: FC<CustomOptionProps> = ({
+const UserOption: FC<UserOptionProps> = ({
   selected = false,
   withPadding = false,
   label,
