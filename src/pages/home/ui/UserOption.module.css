@@ -1,0 +1,70 @@
+.userOptionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+
+  &.withoutPadding:hover .userOptionLabel {
+    color: var(--text-accent, #6E328C);
+  }
+}
+
+.userOptionTag {
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-template-columns: repeat(2, auto);
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 12px;
+  text-align: start;
+  overflow: hidden;
+}
+
+.userOptionLabel {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.016em;
+  text-align: left;
+  color: var(--text-primary, #130817E5);
+}
+
+.userOptionEmail {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.006em;
+  text-align: left;
+  color: var(--text-tertiary, #13081766);
+}
+
+.userOptionAvatarContainer {
+  width: 32px;
+  height: 32px;
+  grid-row: 1 / 3;
+  border: 0.5px solid var(--border-secondary, #1308170D);
+  border-radius: 50%;
+
+  & > img {
+    width: 100%;
+  }
+
+  &.withInitials {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--border-primary, #1308171A);
+    border-radius: var(--radiusradius-x);
+  }
+
+  & > .userOptionInitials {
+    font-weight: 600;
+    line-height: 12px;
+    color: #130817B2;
+  }
+}
+
+.selectedIndicator {
+  width: 20px;
+  height: 20px;
+}
